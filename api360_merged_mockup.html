@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><title>CP 360 · API 360 Console + Catalog Admin — merged mockup</title>
+<style>
+  :root{
+    --bg:#f5f8f8;--panel:#fff;--panel2:#dfe6e9;--border:#b5b6b6;--text:#333;--sub:#666;
+    --navy:#10193b;--accent:#0f4775;--pop:#31bced;--success:#159943;--successbg:#d0ebd9;
+    --danger:#c1113a;--dangerbg:#f3d2d7;--warning:#e67e22;--warningbg:#fae5d3;
+    --info:#0091bf;--infobg:#e0f5fd;--mono:'Roboto Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Roboto,Arial,sans-serif;
+    font-size:14px;line-height:1.5;min-width:1560px;display:flex}
+  .rail{width:200px;flex-shrink:0;background:var(--navy);color:#b9c6d6;min-height:100vh;padding:6px 0}
+  .rlogo{padding:12px 16px;color:#fff;font-weight:700;font-size:16px}
+  .rlogo small{display:block;color:#8fb4dd;font-weight:400;font-size:10px;letter-spacing:.08em}
+  .glbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#6d84a3;padding:9px 16px 2px}
+  .nitem{padding:6px 16px;font-size:12.5px;cursor:pointer;border-left:3px solid transparent}
+  .nitem:hover{background:#1a2547;color:#fff}
+  .nitem.on{background:#1c2a52;color:#fff;border-left-color:var(--pop);font-weight:500}
+  .nsub{padding:3px 16px 3px 26px;font-size:11.5px;color:#8fa3bd;cursor:pointer}
+  .nsub.on{color:var(--pop);font-weight:500}
+  .main{flex:1;min-width:0}
+  .hdr{height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;padding:0 16px}
+  .hdr .logo{font-weight:700}.hdr .logo small{color:#9db3c9;font-weight:400;margin-left:8px;font-size:11px}
+  .hdr .env{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:11.5px}
+  .hdr select{height:26px;font-size:11.5px;border-radius:2px;border:0}
+  .hdr .live{font-size:11px;font-weight:700;background:var(--successbg);color:var(--success);
+    border-radius:999px;padding:2px 10px}
+  .layout{display:grid;grid-template-columns:250px 1fr 230px;gap:12px;padding:14px 16px;max-width:1500px}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:3px;
+    box-shadow:0 3px 5px rgba(0,0,0,.08);overflow:hidden}
+  .ph{display:flex;align-items:center;padding:8px 12px;border-bottom:1px solid var(--panel2);background:#fafcfc}
+  .ph h2{font-size:11px;font-weight:700;text-transform:uppercase;margin:0}
+  .ph .hint{margin-left:auto;font-size:10px;color:var(--sub)}
+  .chip{font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;white-space:nowrap}
+  .chip.get{background:var(--successbg);color:var(--success)}
+  .chip.post{background:var(--warningbg);color:var(--warning)}
+  .chip.put{background:var(--infobg);color:var(--info)}
+  .chip.del{background:var(--dangerbg);color:var(--danger)}
+  .chip.green{background:var(--successbg);color:var(--success)}
+  .chip.red{background:var(--dangerbg);color:var(--danger)}
+  .chip.grey{background:var(--panel2);color:var(--sub)}
+  /* collections tree */
+  .grp{padding:7px 12px 3px;font-size:10px;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--sub);font-weight:700}
+  .req{display:flex;gap:7px;align-items:center;padding:5px 12px 5px 20px;font-size:11.5px;cursor:pointer}
+  .req:hover{background:#eef3f6}
+  .req.on{background:var(--infobg);border-left:3px solid var(--pop);padding-left:17px}
+  .req .nm{font-family:var(--mono);font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* request builder */
+  .urlbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--panel2);align-items:center}
+  .urlbar select{height:32px;font-family:var(--mono);font-size:11.5px;font-weight:700;border-radius:2px;
+    border:1px solid var(--border)}
+  .urlbar input{flex:1;height:32px;border:1px solid var(--border);border-radius:2px;
+    font-family:var(--mono);font-size:11.5px;padding:0 10px}
+  .urlbar input b{color:var(--accent)}
+  .send{height:32px;background:var(--accent);color:#fff;border:0;border-radius:2px;
+    font-size:12.5px;font-weight:500;padding:0 20px;cursor:pointer}
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--panel2);background:#fafcfc}
+  .tab{padding:7px 14px;font-size:11.5px;cursor:pointer;border-bottom:2px solid transparent;color:var(--sub)}
+  .tab.on{border-bottom-color:var(--pop);color:var(--navy);font-weight:500}
+  .kv{display:grid;grid-template-columns:24px 220px 1fr 60px;gap:8px;padding:5px 12px;
+    border-bottom:1px solid var(--panel2);align-items:center;font-family:var(--mono);font-size:10.5px}
+  .kv input[type=text]{height:26px;border:1px solid var(--panel2);border-radius:2px;
+    font-family:var(--mono);font-size:10.5px;padding:0 8px}
+  .kv .var{color:var(--accent);font-weight:700}
+  .kv .desc{font-family:Roboto;color:var(--sub);font-size:10px}
+  /* response */
+  .rstat{display:flex;gap:14px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--panel2);
+    background:#fafcfc;font-family:var(--mono);font-size:11px}
+  .rstat .code{font-weight:700;color:var(--success);font-size:12.5px}
+  .rbody{background:#0f1c33;color:#c9d6e8;font-family:var(--mono);font-size:11px;
+    padding:12px 14px;overflow:auto;max-height:330px;line-height:1.65;white-space:pre}
+  .rbody .k{color:#7fb5e8}.rbody .s{color:#9fd0a8}.rbody .n{color:#e8b87f}.rbody .masked{color:#ff9dbb}
+  .valrow{display:flex;gap:8px;align-items:flex-start;padding:6px 12px;font-size:11px;
+    border-bottom:1px solid var(--panel2)}
+  .valrow code{font-family:var(--mono);font-size:10px;background:var(--panel2);padding:0 5px;border-radius:2px}
+  /* right rail */
+  .hrow{padding:7px 12px;border-bottom:1px solid var(--panel2);cursor:pointer}
+  .hrow:hover{background:#eef3f6}
+  .hrow .t{display:flex;gap:6px;align-items:center;font-family:var(--mono);font-size:10px}
+  .hrow .u{font-family:var(--mono);font-size:9.5px;color:var(--sub);overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .btn2{height:26px;background:#fff;color:var(--accent);border:1px solid var(--border);
+    border-radius:2px;font-size:11px;padding:0 10px;cursor:pointer}
+
+  .tabbar{display:flex;gap:0;padding:12px 16px 0;max-width:1500px}
+  .tabbar label{padding:8px 18px;font-size:12.5px;cursor:pointer;background:#e8edf0;
+    border:1px solid var(--border);border-bottom:0;border-radius:3px 3px 0 0;margin-right:4px;
+    color:var(--sub);font-weight:500}
+  .tabc{display:none}
+  input.tsel{display:none}
+  #t1:checked ~ .tabbar label[for=t1],#t2:checked ~ .tabbar label[for=t2]{background:var(--panel);color:var(--navy);
+    font-weight:700;border-bottom:1px solid var(--panel);position:relative;top:1px}
+  #t1:checked ~ #c1,#t2:checked ~ #c2{display:block}
+  .tabhome{border-top:1px solid var(--border);margin:0 16px;max-width:1468px;
+    background:var(--panel);border:1px solid var(--border);border-radius:0 3px 3px 3px;
+    padding-top:2px}
+  .subnav{display:flex;gap:5px;padding:10px 16px 0;max-width:1500px;align-items:center}
+  .subnav span{font-size:11px;font-weight:700;padding:4px 13px;border-radius:999px;cursor:pointer;background:var(--panel2);color:var(--sub)}
+  .subnav span.on{background:var(--accent);color:#fff}
+  .secdiv{margin:16px 16px 8px;max-width:1468px;border-top:2px solid var(--panel2);padding-top:8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent)}
+  .mcard{background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:8px 13px;min-width:104px}
+  .mcard .v{font-size:19px;font-weight:700;color:var(--navy)}
+  .mcard .l{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);font-weight:700}
+</style>
+<style>
+  .page{display:none;width:100%}
+  #p0:checked ~ .pages #page0{display:flex}
+  #p1:checked ~ .pages #page1{display:flex}
+  #p2:checked ~ .pages #page2{display:flex}
+  .pages{display:flex;width:100%}
+  .psel,.asel{display:none}
+  label.nitem{border-left:3px solid transparent}
+  label.nitem.on{border-left-color:var(--pop)}
+  .acontent{display:none}
+  #a1:checked ~ .acontents #ac1,#a2:checked ~ .acontents #ac2,
+  #a3:checked ~ .acontents #ac3,#a4:checked ~ .acontents #ac4,
+  #a5:checked ~ .acontents #ac5{display:block}
+  #a1:checked ~ .subnav label[for=a1],#a2:checked ~ .subnav label[for=a2],
+  #a3:checked ~ .subnav label[for=a3],#a4:checked ~ .subnav label[for=a4],
+  #a5:checked ~ .subnav label[for=a5]{background:var(--accent);color:#fff}
+  .subnav label{font-size:11px;font-weight:700;padding:4px 13px;border-radius:999px;cursor:pointer;background:var(--panel2);color:var(--sub)}
+
+<style>
+  .pjsel{display:none}
+  .pj-empty{display:none}
+  #pj3:checked ~ .pjbody .pj-full{display:none}
+  #pj3:checked ~ .pjbody .pj-empty{display:block}
+  #pj1:checked ~ .pjtoggle label[for=pj1],#pj2:checked ~ .pjtoggle label[for=pj2],
+  #pj3:checked ~ .pjtoggle label[for=pj3]{background:var(--navy);color:#fff}
+  .pjtoggle label{font-size:11.5px;font-weight:700;padding:5px 14px;border-radius:3px;cursor:pointer;background:var(--panel2);color:var(--sub)}
+  .bfcard{background:#fff;border:1px solid var(--panel2);border-radius:3px;padding:9px 13px;margin-bottom:7px;cursor:pointer}
+  .bfcard:hover{border-color:var(--accent)}
+</style>
+</head><body style="display:block">
+<input type="radio" name="page" id="p0" class="psel" checked/>
+<input type="radio" name="page" id="p1" class="psel"/>
+<input type="radio" name="page" id="p2" class="psel"/>
+<div class="pages">
+  <div class="page" id="page0">
+    <nav class="rail">
+  <div class="rlogo">CP 360<small>CAPITAL PARTNERS · BBH</small></div>
+  <div class="nitem">&#8962; Home</div>
+  <div class="glbl">Catalog</div>
+  <div class="nitem">Interface 360</div>
+  <label for="p0" class="nitem on" style="display:block;border-left:3px solid var(--pop)">API 360</label>
+  <div class="nitem">Data 360</div><div class="nitem">Datapoint 360</div>
+  <div class="glbl">Governance</div>
+  <div class="nitem">PII Explorer</div><div class="nitem">Quality Guardrails</div>
+  <div class="nitem">Variance 360</div><div class="nitem">Recon 360</div>
+  <label for="p1" class="nitem" style="display:block">⌘ API Console</label>
+  <div class="glbl">Admin</div>
+  <div class="nitem">Data Sources</div>
+  <label for="p2" class="nitem" style="display:block">⚙ API Catalog Admin</label>
+  <div class="glbl">Architecture</div>
+  <div class="nitem">System Design</div>
+  <div style="margin:14px 12px 0;padding:8px 10px;background:#1c2a52;border-radius:3px;font-size:9.5px;color:#8fa3bd;line-height:1.5">
+    <b style="color:#b9c6d6">Three screens, one catalog</b> — flip the Non-SEI toggle here and watch it agree with the other two.</div>
+</nav>
+    <div class="main">
+      <div class="hdr"><b style="font-size:16px">API 360</b>
+        <span style="font-size:11px;color:var(--sub)">design-time catalog · api_sources / api_endpoints / api_business_flows</span></div>
+
+      <input type="radio" name="pj" id="pj1" class="pjsel"/>
+      <input type="radio" name="pj" id="pj2" class="pjsel" checked/>
+      <input type="radio" name="pj" id="pj3" class="pjsel"/>
+      <div class="pjtoggle" style="display:flex;gap:7px;align-items:center;padding:12px 16px 4px">
+        <label for="pj1">All <span style="font-weight:400">209</span></label>
+        <label for="pj2">SEI <span style="font-weight:400">197</span></label>
+        <label for="pj3">Non-SEI <span style="font-weight:400">0</span></label>
+        <span style="font-size:10px;color:var(--sub);margin-left:8px">same _project_clause as the Console &amp; Catalog Admin — one number everywhere</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;padding:7px 12px;background:#fff;border:1px solid var(--panel2);border-radius:4px;margin:8px 16px 0;max-width:860px">
+        <span style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub)">Legacy system</span>
+        <span class="chip" style="cursor:pointer;background:#7c3aed;color:#fff;border-radius:999px;padding:4px 13px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#fff;margin-right:5px"></span>AddVantage</span>
+        <span class="chip" style="cursor:pointer;background:var(--panel2);color:var(--sub);border-radius:999px;padding:4px 13px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#0d7a5f;margin-right:5px"></span>CRD</span>
+        <span class="chip" style="cursor:pointer;background:var(--panel2);color:var(--sub);border-radius:999px;padding:4px 13px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#d3542a;margin-right:5px"></span>STAR</span>
+        <span class="chip" style="cursor:pointer;background:var(--panel2);color:var(--sub);border-radius:999px;padding:4px 13px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#0f4775;margin-right:5px"></span>Internal</span>
+        <span style="font-size:9.5px;color:var(--sub);margin-left:6px">same pills as Data 360 · pill = project_id value · counts appear as systems ingest</span>
+      </div>
+      <div style="display:flex;gap:16px;padding:6px 16px 0;border-bottom:1px solid var(--panel2);margin:0 16px">
+        <span style="font-size:12px;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:5px">Business Flow</span>
+        <span style="font-size:12px;color:var(--sub);padding-bottom:5px">Sources</span>
+      </div>
+
+      <div class="pjbody" style="padding:12px 16px;max-width:900px">
+        <!-- populated state (All / SEI) -->
+        <div class="pj-full">
+          <div style="display:flex;gap:14px;margin-bottom:9px">
+            <span style="font-size:11.5px;font-weight:700;color:var(--accent);border-bottom:2px solid var(--accent);padding-bottom:3px">Business Functions</span>
+            <span style="font-size:11.5px;color:var(--sub)">Per-domain APIs</span>
+          </div>
+          <button class="send" style="width:100%;margin-bottom:10px">＋ New Flow</button>
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:6px">Business functions (57)</div>
+          <input placeholder="Search business function…" style="width:100%;height:30px;border:1px solid var(--border);border-radius:3px;font-size:12px;padding:0 10px;margin-bottom:10px"/>
+          <div style="font-size:10.5px;font-weight:700;color:var(--accent);margin:8px 0 6px">ACCOUNT &amp; CLIENT LIFECYCLE (10)</div>
+          <div class="bfcard"><b style="font-size:12.5px">Update Account Characteristics</b>
+            <div style="font-size:10px;color:var(--sub);margin-top:2px">4 steps · <span style="color:var(--success)">curated</span> · <span class="chip green">runnable</span></div></div>
+          <div class="bfcard"><b style="font-size:12.5px">Retrieve Account Details</b>
+            <div style="font-size:10px;color:var(--sub);margin-top:2px">2 steps · <span style="color:var(--success)">curated</span> · <span class="chip green">runnable</span></div></div>
+          <div class="bfcard"><b style="font-size:12.5px">Mint SEI OAuth Token</b>
+            <div style="font-size:10px;color:var(--sub);margin-top:2px">1 step · <span style="color:var(--success)">curated</span> · <span class="chip green">runnable</span></div></div>
+          <div style="font-size:10.5px;font-weight:700;color:var(--accent);margin:10px 0 6px">PORTFOLIO &amp; MODEL MANAGEMENT (14)</div>
+          <div class="bfcard"><b style="font-size:12.5px">Retrieve Investment Performance</b>
+            <div style="font-size:10px;color:var(--sub);margin-top:2px">3 steps · generated · <span class="chip" style="background:var(--warningbg);color:var(--warning)">docs-only · no bindings yet</span></div></div>
+          <div style="font-size:10px;color:var(--sub);margin-top:4px">badges match the Console's Guided tiles — same api_business_flows rows, same bindings truth</div>
+        </div>
+        <!-- empty state (Non-SEI) -->
+        <div class="pj-empty">
+          <div style="border:1px dashed var(--border);border-radius:4px;padding:34px 20px;text-align:center;background:#fff">
+            <div style="font-size:26px;margin-bottom:8px">⬚</div>
+            <b style="font-size:13px">No business functions for Non-SEI yet</b>
+            <div style="font-size:11px;color:var(--sub);margin-top:6px;line-height:1.6">
+              Nothing non-SEI has been ingested — so this list is honestly empty, not leaking SEI rows.<br/>
+              Flows appear here when specs land in the artifacts tree
+              (<code style="font-family:var(--mono);font-size:9.5px">Catalog Admin → Catalog &amp; Ingestion → Upload</code>)
+              and flows are generated or built.</div>
+            <div style="font-size:9.5px;color:var(--sub);margin-top:10px">fix in the build: bf_api_flows fetch now passes the toggle + _project_clause — previously 57 SEI functions leaked through here</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page" id="page1">
+    <nav class="rail">
+  <div class="rlogo">CP 360<small>CAPITAL PARTNERS · BBH</small></div>
+  <div class="nitem">&#8962; Home</div>
+  <div class="glbl">Catalog</div>
+  <div class="nitem">Interface 360</div><label for="p0" class="nitem" style="display:block">API 360</label>
+  <div class="nitem">Data 360</div><div class="nitem">Datapoint 360</div>
+  <div class="glbl">Governance</div>
+  <div class="nitem">PII Explorer</div><div class="nitem">Quality Guardrails</div>
+  <div class="nitem">Variance 360</div><div class="nitem">Recon 360</div>
+  <label for="p1" class="nitem on" style="display:block">⌘ API Console</label>
+  <div class="glbl">Admin</div>
+  <div class="nitem">Data Sources</div>
+  <label for="p2" class="nitem" style="display:block">⚙ API Catalog Admin</label>
+  <div class="glbl">Architecture</div>
+  <div class="nitem">System Design</div>
+  <div style="margin:14px 12px 0;padding:8px 10px;background:#1c2a52;border-radius:3px;font-size:9.5px;color:#8fa3bd;line-height:1.5">
+    <b style="color:#b9c6d6">Click the nav</b> — the two screens switch right here, exactly as in CP 360.</div>
+</nav>
+    <div class="main">
+<div class="hdr">
+  <span class="logo">CP 360<small>API 360 · CONSOLE · request runner for SEI &amp; internal APIs</small></span>
+    <div class="env">
+    <span>Environment</span>
+    <select><option>SEI UAT (gateway: Apigee-NP)</option><option selected>SEI QA</option><option>SEI DEV</option><option>Internal · CP Integration Hub QA</option></select>
+    <button class="btn2" style="background:transparent;color:#b9c6d6;border-color:#3a4a6e">⚙ variables</button>
+    <span class="live">LIVE</span>
+  </div>
+</div>
+
+
+
+<div style="display:flex;gap:10px;align-items:center;padding:12px 16px 2px;max-width:1500px">
+  <div style="display:inline-flex;background:#e8edf0;border:1px solid var(--border);border-radius:999px;padding:2px" title="Filter the whole console by provider system">
+    <span style="padding:4px 16px;font-size:11.5px;border-radius:999px;cursor:pointer;color:var(--sub)">All</span>
+    <span style="padding:4px 16px;font-size:11.5px;border-radius:999px;cursor:pointer;color:var(--sub)">SEI</span>
+    <span style="padding:4px 16px;font-size:11.5px;border-radius:999px;cursor:pointer;background:var(--navy);color:#fff;font-weight:600">Non-SEI</span>
+      <span style="display:flex;gap:6px;align-items:center;margin-left:10px"><span style="font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub)">Legacy system</span>
+      <span class="chip" style="cursor:pointer;background:#7c3aed;color:#fff;border-radius:999px;padding:3px 11px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-right:4px"></span>AddVantage</span>
+      <span class="chip" style="cursor:pointer;background:var(--panel2);color:var(--sub);border-radius:999px;padding:3px 11px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#0d7a5f;margin-right:4px"></span>CRD</span>
+      <span class="chip" style="cursor:pointer;background:var(--panel2);color:var(--sub);border-radius:999px;padding:3px 11px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#d3542a;margin-right:4px"></span>STAR</span>
+      <span class="chip" style="cursor:pointer;background:var(--panel2);color:var(--sub);border-radius:999px;padding:3px 11px"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#0f4775;margin-right:4px"></span>Internal</span></span>
+  </div>
+  <select style="height:28px;font-size:11.5px;border:1px solid var(--border);border-radius:999px;padding:0 12px;background:#fff;color:var(--navy)" title="Specific system — appears only when Non-SEI is selected · options render from the systems registry">
+    <option selected>All non-SEI systems</option>
+    <option>INTERNAL — CP Integration Hub</option>
+    <option disabled>ADDVANTAGE — planned</option>
+    <option disabled>CRD — planned</option>
+    <option disabled>STAR — planned</option>
+    <option disabled>PLAID — planned</option>
+  </select>
+</div>
+<input type="radio" name="tabs" id="t1" class="tsel" checked/>
+<input type="radio" name="tabs" id="t2" class="tsel"/>
+<div class="tabbar">
+  <label for="t1">🧭 Guided</label>
+  <label for="t2">⌘ Console</label>
+</div>
+<div class="tabc tabhome" id="c1"><!-- ======================= GUIDED MODE (business users) ======================= -->
+<div style="padding:14px 16px 0;max-width:1500px">
+  <div style="background:var(--infobg);border:1px solid #b9d0e8;border-radius:3px;padding:8px 13px;font-size:11.5px;color:var(--accent);margin-bottom:12px">
+    <b>Guided mode</b> — ask questions of SEI in plain terms. Forms come from the API contract, answers come back
+    readable, client data stays masked by your entitlements. The <b>Console</b> toggle shows the same call as raw
+    request/response for engineers — both modes are the same evidence-logged action.</div>
+
+  <div style="display:grid;grid-template-columns:270px 1fr;gap:12px">
+    <!-- task tiles -->
+    <div class="panel">
+      <div class="ph"><h2>What do you want to check?</h2></div>
+      <div class="req on" style="padding:9px 14px"><span>🔎</span><span style="font-size:12.5px">Look up an account</span></div>
+      <div class="req" style="padding:9px 14px"><span>📊</span><span style="font-size:12.5px">Positions for an account</span></div>
+      <div class="req" style="padding:9px 14px"><span>💰</span><span style="font-size:12.5px">Balances &amp; cash</span></div>
+      <div class="req" style="padding:9px 14px"><span>🧾</span><span style="font-size:12.5px">Find transactions</span></div>
+      <div class="req" style="padding:9px 14px"><span>📑</span><span style="font-size:12.5px">Tax lots for an account</span></div>
+      <div class="req" style="padding:9px 14px"><span>⚖️</span><span style="font-size:12.5px">Compare SEI vs AddVantage</span></div>
+      <div class="req" style="padding:9px 14px;border-top:1px dashed var(--panel2)"><span>🧾</span><span style="font-size:12.5px">Restriction audit for an office <span class="chip grey">BA-built</span> <span class="chip green">runnable</span></span></div>
+      <div class="req" style="padding:9px 14px"><span>⚙️</span><span style="font-size:12.5px">Retrieve Investment Performance <span class="chip grey">generated</span> <span class="chip" style="background:var(--warningbg);color:var(--warning)">docs-only · no bindings yet</span></span></div>
+      <div class="req" style="padding:9px 14px;background:#f2f8f4"><span>＋</span><span style="font-size:12.5px;color:var(--accent);font-weight:500">Build a new service…</span></div>
+      <div style="padding:8px 14px;font-size:10px;color:var(--sub)">tiles are generated from the API 360 catalog —
+        new SEI endpoints appear here automatically with a friendly name</div>
+    </div>
+
+    <!-- guided form + readable answer -->
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="panel">
+        <div class="ph"><h2>Look up an account</h2><span class="hint">SEI QA · asks GET /accounts/{accountId} for you</span></div>
+        <div style="display:flex;gap:10px;align-items:flex-end;padding:11px 14px;flex-wrap:wrap">
+          <div><label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">Account number</label>
+            <input value="0084271070" style="height:32px;border:1px solid var(--border);border-radius:2px;font-family:var(--mono);font-size:12px;padding:0 10px;width:180px"/></div>
+          <div><label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">Include</label>
+            <span style="display:inline-flex;gap:12px;font-size:12px;height:32px;align-items:center">
+              <label><input type="checkbox" checked/> Objectives</label>
+              <label><input type="checkbox" checked/> Restrictions</label>
+              <label><input type="checkbox"/> Fee schedule</label></span></div>
+          <button class="send">Get answer ▶</button>
+          <span style="font-size:10.5px;color:var(--sub)">tip: paste several account numbers to run them all</span>
+        </div>
+      </div>
+
+      <div class="panel" id="g-answer" style="display:none">
+        <div class="rstat"><span class="code">✓ Answered</span><span>412 ms</span>
+          <span style="color:var(--sub)">as of 2026-07-28 06:00 UTC · SEI QA</span>
+          <span style="margin-left:auto;display:flex;gap:6px">
+            <button class="btn2">📋 copy</button><button class="btn2">⬇ Excel</button>
+            <button class="btn2">⚙ view as console request</button></span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+          <div style="padding:12px 16px;border-right:1px solid var(--panel2)">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:6px">Account</div>
+            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--navy)">0084271070</div>
+            <div style="font-size:12px;margin:2px 0 8px">AAAAAAA AAAAA AAAAA TR
+              <span class="chip grey" title="masked by your entitlements">⛨ name masked</span></div>
+            <table style="font-size:12px;border-collapse:collapse">
+              <tr><td style="color:var(--sub);padding:2px 14px 2px 0">Status</td><td><span class="chip green">ACTIVE</span></td></tr>
+              <tr><td style="color:var(--sub);padding:2px 14px 2px 0">Type</td><td>Client Account (code 2)</td></tr>
+              <tr><td style="color:var(--sub);padding:2px 14px 2px 0">Objective</td><td>Growth · Moderate risk</td></tr>
+            </table>
+          </div>
+          <div style="padding:12px 16px">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:6px">Restrictions · 2</div>
+            <table style="font-size:12px;border-collapse:collapse;width:100%">
+              <tr style="font-size:10px;text-transform:uppercase;color:var(--sub)"><td>Code</td><td>Meaning</td></tr>
+              <tr><td style="font-family:var(--mono);padding:3px 14px 3px 0">700</td><td>Fund Substitution</td></tr>
+              <tr><td style="font-family:var(--mono);padding:3px 14px 3px 0">450</td><td>No Tobacco</td></tr>
+            </table>
+            <div style="font-size:10.5px;color:var(--sub);margin-top:8px">code meanings joined from the CP 360
+              dictionary — the raw API returns codes only</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="tabc" id="c2"><div class="layout">
+
+  <!-- ============ left: collections ============ -->
+  <div class="panel">
+    <div class="ph"><h2>Collections</h2><span class="hint">from API 360 Swagger/Postman ingest</span></div>
+    <div class="grp">SEI Wealth Platform · Accounts <span class="chip grey">SEI</span></div>
+    <div class="req on"><span class="chip get">GET</span><span class="nm">/accounts/{accountId}</span></div>
+    <div class="req"><span class="chip get">GET</span><span class="nm">/accounts/{accountId}/positions</span></div>
+    <div class="req"><span class="chip get">GET</span><span class="nm">/accounts/{accountId}/balances</span></div>
+    <div class="req"><span class="chip post">POST</span><span class="nm">/accounts/search</span></div>
+    <div class="grp">SEI · Transactions</div>
+    <div class="req"><span class="chip get">GET</span><span class="nm">/transactions?fromDate=…</span></div>
+    <div class="req"><span class="chip post">POST</span><span class="nm">/transactions/query</span></div>
+    <div class="grp">SEI · Tax Lots</div>
+    <div class="req"><span class="chip get">GET</span><span class="nm">/taxlots/{accountId}</span></div>
+    <div class="grp">Internal · CP Integration Hub <span class="chip grey">INTERNAL</span></div>
+    <div class="req"><span class="chip get">GET</span><span class="nm">/hub/health</span></div>
+    <div class="req"><span class="chip post">POST</span><span class="nm">/hub/replay/{interfaceId}</span></div>
+    <div class="grp" style="color:#9aa9bd">AddVantage · CRD · STAR · Plaid<br/>
+      <span style="font-size:9px;font-weight:400;text-transform:none;letter-spacing:0">appear here on contract ingest — same console, every system</span></div>
+    <div style="padding:9px 12px"><button class="btn2" style="width:100%">+ New request</button></div>
+  </div>
+
+  <!-- ============ center: request builder + response ============ -->
+  <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+    <div class="panel">
+      <div class="urlbar">
+        <select><option selected>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select>
+        <input value="{{baseUrl}}/wealth/v2/accounts/{{accountId}}?include=objectives,restrictions" />
+        <button class="send">Send ▶</button>
+        <button class="btn2">Save</button>
+      </div>
+      <div class="tabs">
+        <div class="tab on">Params · 2</div><div class="tab">Auth · OAuth2 ✓</div>
+        <div class="tab">Headers · 4</div><div class="tab">Body</div>
+        <div class="tab">Tests · 3</div>
+      </div>
+      <div class="kv" style="font-family:Roboto;font-weight:700;font-size:9.5px;text-transform:uppercase;color:var(--sub)">
+        <span></span><span>Key</span><span>Value</span><span></span></div>
+      <div class="kv"><input type="checkbox" checked/><input type="text" value="include"/>
+        <input type="text" value="objectives,restrictions"/><span class="desc">expand</span></div>
+      <div class="kv"><input type="checkbox" checked/><input type="text" value="accountId"/>
+        <input type="text" value="{{accountId}}"/><span class="desc">path · <span class="var">= 0084271070</span></span></div>
+      <div style="padding:6px 12px;font-size:10px;color:var(--sub)">
+        <span class="chip grey">env vars</span>&nbsp; <span style="font-family:var(--mono)">
+        <b class="var" style="color:var(--accent)">{{baseUrl}}</b> = https://api-qa.seic.com ·
+        <b class="var" style="color:var(--accent)">{{accountId}}</b> = 0084271070 ·
+        <b class="var" style="color:var(--accent)">{{token}}</b> = ●●●●●●●● (OAuth2 client-credentials · auto-refreshed · never displayed)</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="rstat">
+        <span class="code">200 OK</span><span>412 ms</span><span>2.4 KB</span>
+        <span style="color:var(--sub)">via Apigee-NP · trace id ap-7f31c2</span>
+        <span style="margin-left:auto;display:flex;gap:6px">
+          <span class="chip green">SCHEMA ✓</span><span class="chip green">TESTS 3/3</span>
+          <button class="btn2">↗ evidence</button></span>
+      </div>
+      <div class="rbody">{
+  <span class="k">"accountId"</span>: <span class="s">"0084271070"</span>,
+  <span class="k">"accountName"</span>: <span class="masked">"AAAAAAA AAAAA AAAAA TR"  ⛨ masked (PII: account name)</span>,
+  <span class="k">"status"</span>: <span class="s">"ACTIVE"</span>,
+  <span class="k">"accountType"</span>: <span class="s">"2=CLIENT ACCOUNT"</span>,
+  <span class="k">"objectives"</span>: {
+    <span class="k">"primary"</span>: <span class="s">"GROWTH"</span>,
+    <span class="k">"riskTolerance"</span>: <span class="s">"MODERATE"</span>
+  },
+  <span class="k">"restrictions"</span>: [
+    { <span class="k">"code"</span>: <span class="n">700</span>, <span class="k">"desc"</span>: <span class="s">"Fund Substitution"</span> },
+    { <span class="k">"code"</span>: <span class="n">450</span>, <span class="k">"desc"</span>: <span class="s">"No Tobacco"</span> }
+  ],
+  <span class="k">"asOf"</span>: <span class="s">"2026-07-28T06:00:00Z"</span>
+}</div>
+      <div class="ph" style="border-top:1px solid var(--panel2)"><h2>Validation · response vs API 360 contract</h2>
+        <span class="hint">schema from ingested Swagger · drift here = SEI changed something</span></div>
+      <div class="valrow"><span class="chip green">✓</span> matches <code>AccountDetail v2.3</code> — all 14 required fields present, types conform</div>
+      <div class="valrow"><span class="chip green">✓</span> test <code>status is 200</code> · <code>latency &lt; 2000ms</code> · <code>restrictions[].code is number</code></div>
+      <div class="valrow"><span class="chip grey">ℹ</span> field <code>asOf</code> is new vs contract v2.2 ingested 06-14 — contract updated in API 360</div>
+    </div>
+  </div>
+
+  <!-- ============ right: history & runs ============ -->
+  <div class="panel">
+    <div class="ph"><h2>History</h2><span class="hint">evidence-logged</span></div>
+    <div class="hrow"><div class="t"><span class="chip get">GET</span><span style="color:var(--success);font-weight:700">200</span><span style="color:var(--sub)">412ms · 13:42</span></div>
+      <div class="u">/accounts/0084271070?include=…</div></div>
+    <div class="hrow"><div class="t"><span class="chip get">GET</span><span style="color:var(--success);font-weight:700">200</span><span style="color:var(--sub)">389ms · 13:40</span></div>
+      <div class="u">/accounts/0084271070/positions</div></div>
+    <div class="hrow"><div class="t"><span class="chip post">POST</span><span style="color:var(--danger);font-weight:700">429</span><span style="color:var(--sub)">88ms · 13:38</span></div>
+      <div class="u">/transactions/query · rate limited</div></div>
+    <div class="hrow"><div class="t"><span class="chip get">GET</span><span style="color:var(--danger);font-weight:700">401</span><span style="color:var(--sub)">102ms · 13:31</span></div>
+      <div class="u">/taxlots/0084271070 · token expired → auto-refreshed</div></div>
+    <div class="ph" style="border-top:1px solid var(--panel2)"><h2>Collection runs</h2></div>
+    <div class="hrow"><div class="t"><span class="chip green">18/18 ✓</span><span style="color:var(--sub)">SEI Accounts smoke · 06:05</span></div>
+      <div class="u">scheduled daily post-batch · 4.1s total</div></div>
+    <div class="hrow"><div class="t"><span class="chip red">16/18</span><span style="color:var(--sub)">SEI Accounts smoke · 07-27</span></div>
+      <div class="u">2 fails: schema drift on /balances</div></div>
+    <div style="padding:9px 12px"><button class="btn2" style="width:100%">▶ Run collection</button></div>
+  </div>
+</div>
+
+
+</div>
+</div>
+  </div>
+  <div class="page" id="page2">
+    <nav class="rail">
+  <div class="rlogo">CP 360<small>CAPITAL PARTNERS · BBH</small></div>
+  <div class="nitem">&#8962; Home</div>
+  <div class="glbl">Catalog</div>
+  <div class="nitem">Interface 360</div><label for="p0" class="nitem" style="display:block">API 360</label>
+  <div class="nitem">Data 360</div><div class="nitem">Datapoint 360</div>
+  <div class="glbl">Governance</div>
+  <div class="nitem">PII Explorer</div><div class="nitem">Quality Guardrails</div>
+  <div class="nitem">Variance 360</div><div class="nitem">Recon 360</div>
+  <label for="p1" class="nitem" style="display:block">⌘ API Console</label>
+  <div class="glbl">Admin</div>
+  <div class="nitem">Data Sources</div>
+  <label for="p2" class="nitem on" style="display:block">⚙ API Catalog Admin</label>
+  <div class="glbl">Architecture</div>
+  <div class="nitem">System Design</div>
+  <div style="margin:14px 12px 0;padding:8px 10px;background:#1c2a52;border-radius:3px;font-size:9.5px;color:#8fa3bd;line-height:1.5">
+    <b style="color:#b9c6d6">Click the nav</b> — the two screens switch right here, exactly as in CP 360.</div>
+</nav>
+    <div class="main">
+      
+<div class="hdr" style="display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;padding:10px 18px">
+  <b style="font-size:16px">⚙ API Catalog Admin</b>
+  <span style="background:var(--danger);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 9px">1 unacknowledged drift</span>
+  <span style="font-size:11px;color:#8fb4dd">Admin → API Catalog Admin · one home for everything that shapes the catalog</span>
+</div>
+      <input type="radio" name="atab" id="a1" class="asel" checked/><input type="radio" name="atab" id="a2" class="asel"/><input type="radio" name="atab" id="a3" class="asel"/><input type="radio" name="atab" id="a4" class="asel"/><input type="radio" name="atab" id="a5" class="asel"/>
+      <div class="subnav"><label for="a1">Overview</label><label for="a2">Contracts &amp; Ingestion</label><label for="a3">Environments &amp; Tests</label><label for="a4">Collection Builder</label><label for="a5">Flow Builder</label><span style="background:none;color:var(--sub);font-weight:400;font-size:10px;margin-left:6px">one section at a time</span></div>
+      <div class="acontents"><div class="acontent" id="ac1">
+
+
+
+<div style="padding:12px 16px 0;max-width:1500px">
+  <div style="display:grid;grid-template-columns:270px 1fr;gap:12px">
+    <div class="panel">
+      <div class="ph"><h2>Systems</h2><button class="btn2" style="margin-left:auto">＋ New</button></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--panel2);background:var(--infobg);border-left:3px solid var(--accent)">
+        <b style="font-size:12.5px">SEI</b> <span class="chip green">ONBOARDED</span>
+        <div style="font-size:10.5px;color:var(--sub)">SEI Wealth Platform · 4 contracts · 2 envs · <span style="color:var(--danger)">1 DRIFT open</span></div></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--panel2)">
+        <b style="font-size:12.5px">ADDVANTAGE</b> <span class="chip green">ONBOARDED</span>
+        <div style="font-size:10.5px;color:var(--sub)">FIS AddVantage · 1 contract (by-hand) · healthy</div></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--panel2)">
+        <b style="font-size:12.5px">INTERNAL</b> <span class="chip green">ONBOARDED</span>
+        <div style="font-size:10.5px;color:var(--sub)">CP Integration Hub · 1 contract</div></div>
+      <div style="padding:9px 13px;border-bottom:1px solid var(--panel2)">
+        <b style="font-size:12.5px">CRD</b> <span class="chip grey">PLANNED</span>
+        <div style="font-size:10.5px;color:var(--sub)">source registered · awaiting vendor file</div></div>
+      <div style="padding:9px 13px">
+        <b style="font-size:12.5px">PLAID</b> <span class="chip grey">PLANNED</span>
+        <div style="font-size:10.5px;color:var(--sub)">URL source failing (proxy) · <span style="color:var(--danger)">needs attention</span></div></div>
+    </div>
+    <div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <h2 style="font-size:15px;margin:0">SEI — SEI Wealth Platform</h2>
+        <span class="chip green">ONBOARDED</span>
+        <span style="margin-left:auto;display:flex;gap:7px">
+          <button class="send">⬆ Ingest now</button>
+          <button class="btn2">▶ Run sources</button></span>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <div class="mcard"><div class="v">4</div><div class="l">Contracts</div></div>
+        <div class="mcard"><div class="v">36</div><div class="l">Endpoints</div></div>
+        <div class="mcard"><div class="v">5</div><div class="l">Collections</div></div>
+        <div class="mcard"><div class="v">2</div><div class="l">Environments</div></div>
+        <div class="mcard"><div class="v" style="color:var(--danger)">1</div><div class="l">Open drift</div></div>
+        <div class="mcard"><div class="v" style="color:var(--success)">99%</div><div class="l">7-day pass</div></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><h2>Health &amp; attention</h2></div>
+        <div class="valrow"><span class="chip red">DRIFT</span><span>Balances API — cashAvailable required → nullable · 14 downstream consumers · resolve in the Contracts &amp; Ingestion tab</span>
+          <button class="btn2" style="margin-left:auto">Acknowledge</button></div>
+        <div class="valrow"><span class="chip green">✓</span><span>daily smoke 18/18 this morning · avg 412ms</span></div>
+        <div class="valrow"><span class="chip green">✓</span><span>environments reachable · SEI QA 41ms · SEI UAT 63ms</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><div class="acontent" id="ac2">
+<div style="padding:12px 16px;max-width:1500px">
+  <div style="background:var(--infobg);border:1px solid #b9d0e8;border-radius:3px;padding:8px 13px;font-size:11.5px;color:var(--accent);margin-bottom:12px">
+    <b>One catalog, one pipeline.</b> Ingestion is the existing API 360 connector over the artifacts tree
+    (<code style="font-family:var(--mono);font-size:10px">API-SPEC/&lt;domain&gt;/…</code>). This screen adds:
+    version snapshots &amp; diffs, drift on sources, and UI upload that writes into the same tree — folder scan and
+    upload can never diverge.</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <!-- systems: from project_id -->
+    <div class="panel">
+      <div class="ph"><h2>Systems · from the catalog itself</h2>
+        <span class="hint">DISTINCT project_id + ProjectResolver map — no registry table</span></div>
+      <div class="row"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#31bced;margin-right:6px"></span><b style="font-family:var(--mono);font-size:11px">sei</b><span>SEI Wealth Platform</span>
+        <span class="chip green">197 sources</span>
+        <span style="margin-left:auto;font-size:10.5px;color:var(--danger)">1 drift open</span></div>
+      <div class="row"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0f4775;margin-right:6px"></span><b style="font-family:var(--mono);font-size:11px">internal</b><span>CP / in-house</span>
+        <span class="chip green">12 sources</span></div>
+      <div class="row"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7c3aed;margin-right:6px"></span><b style="font-family:var(--mono);font-size:11px">addvantage</b><span>FIS AddVantage</span>
+        <span class="chip grey">0 sources — resolver knows it, folder awaits files</span></div>
+      <div class="row"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#0d7a5f;margin-right:6px"></span><b style="font-family:var(--mono);font-size:11px">charles_river</b><span>CRD</span>
+        <span class="chip grey">0 sources</span></div>
+      <div style="padding:7px 12px;font-size:10px;color:var(--sub)">new system = new folder under the artifacts tree
+        (+ one _SYSTEM_MAP line if the name needs fuzzy matching)</div>
+    </div>
+
+    <!-- upload into the tree -->
+    <div class="panel">
+      <div class="ph"><h2>Upload swagger · writes into the artifacts tree</h2>
+        <span class="hint">then runs the SAME connector on that one file</span></div>
+      <div style="padding:10px 13px;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+        <div><label style="display:block;font-size:9.5px;text-transform:uppercase;color:var(--sub);font-weight:700;margin-bottom:2px">System</label>
+          <select style="height:28px;font-size:11.5px"><option selected>sei</option><option>internal</option><option>addvantage</option><option>charles_river</option><option>＋ new folder…</option></select></div>
+        <div><label style="display:block;font-size:9.5px;text-transform:uppercase;color:var(--sub);font-weight:700;margin-bottom:2px">Domain / feature group</label>
+          <input value="PortfolioandModelManagement" list="domains" style="height:28px;width:230px;border:1px solid var(--border);border-radius:2px;font-size:11.5px;padding:0 9px"/></div>
+        <div><label style="display:block;font-size:9.5px;text-transform:uppercase;color:var(--sub);font-weight:700;margin-bottom:2px">Swagger file</label>
+          <input type="file" style="font-size:11px"/></div>
+        <button class="send">⬆ Upload &amp; ingest</button>
+      </div>
+      <div style="padding:0 13px 10px;font-size:10.5px;color:var(--sub)">
+        lands at <code style="font-family:var(--mono);font-size:9.5px">API-SPEC/PortfolioandModelManagement/swagger-spec-….yaml</code>
+        → connector shred (sources/endpoints/fields/errors, protect= honored) → version snapshot → diff vs prior → drift if breaking</div>
+      <div style="padding:7px 13px;border-top:1px solid var(--panel2);display:flex;gap:8px;align-items:center">
+        <button class="btn2">⟳ Scan folder now</button>
+        <span style="font-size:10.5px;color:var(--sub)">re-ingests the whole tree · idempotent · your scheduled job</span></div>
+    </div>
+  </div>
+
+  <!-- sources with drift -->
+  <div class="panel">
+    <div class="ph"><h2>Sources · api_sources with version history</h2>
+      <span class="hint">drift lives on the source row · acknowledge once triaged</span></div>
+    <div class="row"><b>PmeModelAssignmentServices</b>
+      <span class="chip grey">sei · PortfolioandModelManagement</span>
+      <span style="font-family:var(--mono);font-size:10px">v2.3 · 3 snapshots</span>
+      <span class="chip red">DRIFT</span>
+      <span style="font-size:10.5px;color:var(--danger)">cashAvailable required → nullable</span>
+      <span style="margin-left:auto;display:flex;gap:5px">
+        <button class="btn2" style="height:22px;font-size:10px">versions</button>
+        <button class="btn2" style="height:22px;font-size:10px">diff</button>
+        <button class="btn2" style="height:22px;font-size:10px">Acknowledge</button></span></div>
+    <div class="row"><b>EntityInvestmentPerformances</b>
+      <span class="chip grey">sei · PortfolioAggregationHeldAway</span>
+      <span style="font-family:var(--mono);font-size:10px">v1.9 · 1 snapshot</span>
+      <span class="chip green">CURRENT</span>
+      <span style="margin-left:auto"><button class="btn2" style="height:22px;font-size:10px">versions</button></span></div>
+    <div class="row" style="background:#fafcfc"><span style="font-size:10.5px;color:var(--sub)">
+      … 195 more · diff panel: <span class="chip red">BREAKING</span> field removed / required flipped ·
+      <span class="chip amber">ADDITIVE</span> new field · computed from api_spec_versions, validated against api_fields shapes</span></div>
+  </div>
+
+  <!-- decodes stay -->
+  <div class="panel">
+    <div class="ph"><h2>Answer decodes</h2><span class="hint">unchanged — Guided answers join code → meaning here</span></div>
+    <div class="row"><span class="chip grey">RESTRICTION_CODES</span><span style="font-family:var(--mono);font-size:10.5px;width:50px">700</span><span>Fund Substitution</span>
+      <span style="margin-left:auto;font-size:10px;color:var(--sub)">+ 450, 575 · Add row form as before</span></div>
+  </div>
+</div>
+</div><div class="acontent" id="ac3">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px 14px;max-width:1500px">
+
+  <!-- environment variables editor -->
+  <div class="panel">
+    <div class="ph"><h2>Environment · SEI QA — variables</h2>
+      <span class="chip green" style="margin-left:8px">enabled</span>
+      <button class="btn2" style="margin-left:6px;height:20px;font-size:9.5px;padding:0 8px">disable</button>
+      <span class="hint">secrets write-only · resolved server-side at send time</span></div>
+    <div class="kv" style="font-family:Roboto;font-weight:700;font-size:9.5px;text-transform:uppercase;color:var(--sub)">
+      <span></span><span>Variable</span><span>Value</span><span></span></div>
+    <div style="padding:5px 12px 2px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent)">Connection</div>
+    <div class="kv"><input type="checkbox" checked/><input type="text" value="baseUrl"/>
+      <input type="text" value="https://api-qa.seic.com/wealth/v2"/><span class="desc">plain</span></div>
+    <div class="kv"><input type="checkbox" checked/><input type="text" value="clientId"/>
+      <input type="text" value="cp360-recon-qa"/><span class="desc">plain</span></div>
+    <div class="kv"><input type="checkbox" checked/><input type="text" value="clientSecret"/>
+      <input type="text" value="●●●●●●●●●●●●" style="letter-spacing:2px"/><span class="desc">secret</span></div>
+    <div class="kv"><input type="checkbox" checked/><input type="text" value="token"/>
+      <input type="text" value="(auto: OAuth2 client-credentials → {{clientId}})" disabled/><span class="desc">managed</span></div>
+    <div style="padding:5px 12px 2px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent)">Test data <span style="font-weight:400;text-transform:none;letter-spacing:0">— synthetic/approved accounts only, never real client numbers</span></div>
+    <div class="kv"><input type="checkbox" checked/><input type="text" value="testAccountId"/>
+      <input type="text" value="0084271070"/><span class="desc">fixture — fills {{accountId}} in unattended smoke runs; user input overrides</span></div>
+    <div style="padding:8px 12px;display:flex;gap:8px">
+      <button class="send" style="height:28px;font-size:11.5px">Save environment</button>
+      <button class="btn2">Clone as SEI UAT</button>
+    </div>
+  </div>
+
+  <!-- tests editor -->
+  <div class="panel">
+    <div class="ph"><h2>Tests · GET /accounts/{accountId}</h2>
+      <span class="hint">assertions run on every send &amp; in collection runs</span></div>
+    <div class="valrow"><span class="chip green">✓</span><code>response.status == 200</code></div>
+    <div class="valrow"><span class="chip green">✓</span><code>response.time &lt; 2000</code> ms</div>
+    <div class="valrow"><span class="chip green">✓</span><code>body.restrictions[*].code isNumber</code></div>
+    <div class="valrow"><span class="chip grey">＋</span>
+      <input type="text" placeholder="body.accountType matches /^\d+=/" style="flex:1;height:26px;border:1px solid var(--panel2);border-radius:2px;font-family:var(--mono);font-size:10.5px;padding:0 8px"/>
+      <button class="btn2">add</button></div>
+    <div style="padding:7px 12px;font-size:10.5px;color:var(--sub)">
+      Schema check is always on: response validated against the contract
+      ingested in API 360 — no assertion needed for structure.</div>
+  </div>
+
+  <!-- POST example with body -->
+  <div class="panel">
+    <div class="ph"><h2>POST example · /accounts/search</h2>
+      <span class="hint">body editor · variables resolve inside JSON too</span></div>
+    <div class="rbody" style="max-height:180px">{
+  <span class="k">"searchCriteria"</span>: {
+    <span class="k">"accountStatus"</span>: <span class="s">"ACTIVE"</span>,
+    <span class="k">"officeCode"</span>: <span class="s">"{{officeCode}}"</span>,
+    <span class="k">"asOfDate"</span>: <span class="s">"{{today}}"</span>
+  },
+  <span class="k">"paging"</span>: { <span class="k">"page"</span>: <span class="n">1</span>, <span class="k">"size"</span>: <span class="n">100</span> }
+}</div>
+    <div class="rstat"><span class="code">200 OK</span><span>1,204 ms</span><span>184 KB</span>
+      <span style="color:var(--sub)">1,412 accounts · paged 1/15</span>
+      <span style="margin-left:auto"><span class="chip green">SCHEMA ✓</span></span></div>
+  </div>
+
+  <!-- collection run report -->
+  <div class="panel">
+    <div class="ph"><h2>Collection run · SEI Accounts smoke · 07-27 06:05</h2>
+      <span class="hint">scheduled daily post-batch · evidence-tagged CR20260727_0605</span></div>
+    <div class="valrow"><span class="chip green">✓</span><span style="font-family:var(--mono);font-size:10.5px">GET /accounts/{id}</span><span style="color:var(--sub);font-size:10.5px">200 · 388ms · schema ✓ · tests 3/3</span></div>
+    <div class="valrow"><span class="chip green">✓</span><span style="font-family:var(--mono);font-size:10.5px">GET /accounts/{id}/positions</span><span style="color:var(--sub);font-size:10.5px">200 · 604ms · schema ✓</span></div>
+    <div class="valrow"><span class="chip red">✗</span><span style="font-family:var(--mono);font-size:10.5px">GET /accounts/{id}/balances</span>
+      <span style="font-size:10.5px;color:var(--danger)">schema drift: field <code>cashAvailable</code> now nullable — was required in contract v2.2 · SEI notified · API 360 contract flagged</span></div>
+    <div class="valrow"><span class="chip red">✗</span><span style="font-family:var(--mono);font-size:10.5px">POST /transactions/query</span>
+      <span style="font-size:10.5px;color:var(--danger)">429 rate-limited at 06:05 — batch window contention · retry policy suggested</span></div>
+    <div style="padding:7px 12px;font-size:10.5px;color:var(--sub)">
+      16/18 passed · failures create Impact Analysis entries for downstream consumers of these interfaces.</div>
+  </div>
+</div>
+
+
+</div><div class="acontent" id="ac4">
+<!-- ======================= COLLECTION BUILDER ======================= -->
+<div style="padding:4px 16px 14px;max-width:1500px">
+  
+  <div style="display:grid;grid-template-columns:1fr 330px;gap:12px">
+    <!-- catalog picker -->
+    <div class="panel">
+      <div class="ph"><h2>Pick endpoints · from api_endpoints</h2>
+        <span class="hint">typeahead over operation_id · summary · path · feature_group</span></div>
+      <div style="padding:8px 12px;border-bottom:1px solid var(--panel2)">
+        <input value="restr" placeholder="search endpoints…" style="width:100%;height:30px;border:1px solid var(--accent);border-radius:2px;font-size:12px;padding:0 10px"/>
+        <div style="border:1px solid var(--panel2);border-top:0;border-radius:0 0 3px 3px;background:#fff;box-shadow:0 4px 8px rgba(0,0,0,.1)">
+          <div style="padding:5px 10px;font-size:11px;display:flex;gap:8px;background:var(--infobg)"><span class="chip get">GET</span><b>RetrieveAccountRestrictions</b><span style="color:var(--sub);font-family:var(--mono);font-size:9.5px">/accounts/{id}/restrictions</span><span style="margin-left:auto;font-size:9px;color:var(--sub)">PortfolioandModelManagement</span></div>
+          <div style="padding:5px 10px;font-size:11px;display:flex;gap:8px"><span class="chip post">POST</span><b>OrderValidationOverrides</b><span style="color:var(--sub);font-size:9.5px">summary mentions restrictions</span></div>
+          <div style="padding:3px 10px;font-size:9px;color:var(--sub)">ranked: opId prefix › summary word › path substring · filtered by system toggle</div>
+        </div></div>
+      <div style="padding:6px 12px;border-bottom:1px solid var(--panel2);display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:9.5px;font-weight:700;text-transform:uppercase;color:var(--sub)">travels with:</span>
+        <span class="chip grey" style="cursor:pointer">＋ GetPositions</span>
+        <span class="chip grey" style="cursor:pointer">＋ GetBalances</span>
+        <span class="chip grey" style="cursor:pointer">＋ TaxLots</span>
+        <span style="font-size:9px;color:var(--sub)">dependency-neighbors + same feature group of your picks</span></div>
+      <div class="grp">SEI · Accounts API v2.3 <span class="chip grey" style="margin-left:6px">select all</span></div>
+      <div class="kv" style="grid-template-columns:24px 70px 1fr 160px">
+        <input type="checkbox" checked/><span class="chip get">GET</span>
+        <span>/accounts/{accountId}</span><span class="desc">account detail + objectives</span></div>
+      <div class="kv" style="grid-template-columns:24px 70px 1fr 160px">
+        <input type="checkbox" checked/><span class="chip get">GET</span>
+        <span>/accounts/{accountId}/balances</span><span class="desc">⚠ contract drift open</span></div>
+      <div class="kv" style="grid-template-columns:24px 70px 1fr 160px">
+        <input type="checkbox"/><span class="chip post">POST</span>
+        <span>/accounts/search</span><span class="desc">bulk search · paged</span></div>
+      <div class="grp">SEI · Transactions API v1.9</div>
+      <div class="kv" style="grid-template-columns:24px 70px 1fr 160px">
+        <input type="checkbox" checked/><span class="chip post">POST</span>
+        <span>/transactions/query</span><span class="desc">date-range query</span></div>
+      <div class="grp">SEI · Tax Lots API v1.4 <span class="chip grey">STALE contract</span></div>
+      <div class="kv" style="grid-template-columns:24px 70px 1fr 160px">
+        <input type="checkbox"/><span class="chip get">GET</span>
+        <span>/taxlots/{accountId}</span><span class="desc">re-ingest recommended first</span></div>
+    </div>
+
+    <!-- cart + export options -->
+    <div class="panel">
+      <div class="ph"><h2>New collection · 3 picked</h2></div>
+      <div style="padding:10px 12px">
+        <label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">Collection name</label>
+        <input value="Ops · Parallel-Run Daily Checks" style="width:100%;height:30px;border:1px solid var(--border);border-radius:2px;font-size:12px;padding:0 9px;margin-bottom:10px"/>
+        <label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">Target environment placeholders</label>
+        <select style="width:100%;height:30px;font-size:12px;margin-bottom:10px"><option selected>SEI QA</option><option>SEI UAT</option><option>Placeholders only ({{baseUrl}} unset)</option></select>
+        <div style="font-size:11.5px;display:flex;flex-direction:column;gap:5px;margin-bottom:11px">
+          <label><input type="checkbox" checked/> Include example bodies from contract</label>
+          <label><input type="checkbox" checked/> Include standard tests (status, latency, schema)</label>
+          <label><input type="checkbox" checked/> Include OAuth2 auth template <span style="color:var(--sub)">(client id var, secret NEVER exported)</span></label>
+          <label><input type="checkbox"/> Share with team (else personal)</label>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <button class="send" style="width:100%">Create in API 360 Console</button>
+          <button class="btn2" style="width:100%">⬇ Export .postman_collection.json</button>
+          <button class="btn2" style="width:100%">⬇ Export Postman environment (secrets blank)</button>
+        </div>
+        <div style="font-size:10px;color:var(--sub);margin-top:9px">
+          Exports are evidence-logged. Postman files carry variables and auth
+          <i>structure</i> only — secrets stay in CP 360; recipients enter
+          their own credentials.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="panel" style="margin:12px 16px;max-width:1468px">
+    <div class="ph"><h2>Manage collections</h2>
+      <span class="hint">schedule tag feeds the CronJob runner (python -m ingestion.api_console_runner --tag daily) · AUTO are contract-owned</span></div>
+    <div class="row"><span>Ops · Parallel-Run Daily Checks</span><span class="chip grey">MANUAL</span>
+      <input value="daily" style="height:24px;width:76px;border:1px solid var(--panel2);border-radius:2px;font-family:var(--mono);font-size:10px;padding:0 7px"/>
+      <button class="btn2" style="height:22px;font-size:10px">set</button>
+      <button class="btn2" style="height:22px;font-size:10px">✕ delete</button>
+      <span style="margin-left:auto;font-size:10px;color:var(--sub)">runs 06:05 weekdays via CronJob · last run 18/18 ✓</span></div>
+    <div class="row"><span>Accounts API v2.3</span><span class="chip grey">AUTO</span>
+      <input placeholder="tag" style="height:24px;width:76px;border:1px solid var(--panel2);border-radius:2px;font-family:var(--mono);font-size:10px;padding:0 7px"/>
+      <button class="btn2" style="height:22px;font-size:10px">set</button>
+      <span style="font-size:9.5px;color:var(--sub)">no delete — contract-owned, refreshes on ingest</span></div>
+  </div>
+</div><div class="acontent" id="ac5">
+
+<div style="padding:14px 16px;max-width:1500px">
+  <div style="background:var(--infobg);border:1px solid #b9d0e8;border-radius:3px;padding:8px 13px;font-size:11.5px;color:var(--accent);margin-bottom:12px">
+    <b>Flow Builder</b> — flows ARE api_business_flows: your generator drafts them from the dependency
+    graph, BAs curate (protect= keeps curation safe), and runtime <b>bindings</b> make a published flow runnable
+    as a Guided tile. Steps auto-suggest from the same graph. Published flows appear as Guided tiles
+    for everyone, run with the same masking, validation and evidence as everything else.</div>
+
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:12px">
+    <!-- left: flow definition -->
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="panel">
+        <div class="ph"><h2>New service · definition</h2><span class="hint">draft · only you can see it until published</span></div>
+        <div style="display:flex;gap:10px;padding:11px 14px;flex-wrap:wrap;align-items:flex-end">
+          <div><label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">Service name</label>
+            <input value="Restriction audit for an office" style="height:30px;border:1px solid var(--border);border-radius:2px;font-size:12px;padding:0 9px;width:280px"/></div>
+          <div><label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">Icon</label>
+            <select style="height:30px;font-size:14px"><option selected>🧾</option><option>🔎</option><option>⚖️</option><option>📊</option></select></div>
+          <div style="flex:1;min-width:260px"><label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:2px">What it answers (shown on the tile)</label>
+            <input value="Which accounts in an office carry investment restrictions, and which codes?" style="width:100%;height:30px;border:1px solid var(--border);border-radius:2px;font-size:12px;padding:0 9px"/></div>
+        </div>
+        <div style="padding:0 14px 11px">
+          <label style="display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);font-weight:700;margin-bottom:3px">Asks the user for</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span class="chip grey" style="font-size:10.5px;padding:4px 10px">Office code · text · e.g. NY27</span>
+            <span class="chip grey" style="font-size:10.5px;padding:4px 10px">As-of date · date · defaults today</span>
+            <button class="btn2">＋ add input</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- steps -->
+      <div class="panel">
+        <div class="ph"><h2>Steps · 3</h2><span class="hint">drag to reorder · each step sees all earlier outputs</span></div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--panel2)">
+          <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px">
+            <span class="chip" style="background:var(--navy);color:#fff">STEP 1</span>
+            <b style="font-size:12.5px">Find the office''s accounts</b>
+            <span style="margin-left:auto"><button class="btn2">edit</button> <button class="btn2">✕</button></span></div>
+          <div style="font-size:11.5px;display:flex;gap:20px;flex-wrap:wrap">
+            <span>API: <code style="font-family:var(--mono);font-size:10.5px;background:var(--panel2);padding:1px 6px;border-radius:2px">POST /accounts/search</code></span>
+            <span>with: <span style="font-family:var(--mono);font-size:10.5px;color:var(--accent)">officeCode = {{input.officeCode}}</span></span>
+            <span>keep: <span style="font-family:var(--mono);font-size:10.5px;color:#7c3aed">accountList = accounts[].accountId</span></span>
+          </div>
+        </div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--panel2)">
+          <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px">
+            <span class="chip" style="background:var(--navy);color:#fff">STEP 2</span>
+            <b style="font-size:12.5px">Get each account''s restrictions</b>
+            <span class="chip grey">runs per item of accountList</span>
+            <span style="margin-left:auto"><button class="btn2">edit</button> <button class="btn2">✕</button></span></div>
+          <div style="font-size:11.5px;display:flex;gap:20px;flex-wrap:wrap">
+            <span>API: <code style="font-family:var(--mono);font-size:10.5px;background:var(--panel2);padding:1px 6px;border-radius:2px">GET /accounts/{accountId}?include=restrictions</code></span>
+            <span>with: <span style="font-family:var(--mono);font-size:10.5px;color:var(--accent)">accountId = {{each.accountList}}</span></span>
+            <span>keep: <span style="font-family:var(--mono);font-size:10.5px;color:#7c3aed">restrictions[].code, restrictions[].desc</span></span>
+          </div>
+        </div>
+
+        <div style="padding:11px 14px;border-bottom:1px solid var(--panel2)">
+          <div style="display:flex;gap:9px;align-items:center;margin-bottom:6px">
+            <span class="chip" style="background:var(--navy);color:#fff">STEP 3</span>
+            <b style="font-size:12.5px">Shape the answer</b>
+            <span style="margin-left:auto"><button class="btn2">edit</button></span></div>
+          <div style="font-size:11.5px">Present as: <b>table</b> — one row per account × restriction ·
+            columns <span style="font-family:var(--mono);font-size:10.5px">account, code, meaning (joined from dictionary)</span>
+            · summary line: <span style="font-family:var(--mono);font-size:10.5px">"{count} restricted accounts of {total} in {{input.officeCode}}"</span></div>
+        </div>
+        <div style="padding:9px 14px"><button class="btn2">＋ add step · pick from catalog</button></div>
+      </div>
+    </div>
+
+    <!-- right: mapping helper + test run + publish -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="panel">
+        <div class="ph"><h2>Suggest next step · from api_dependencies</h2>
+        <span class="hint">consumers of what step 2 produces</span></div>
+      <div class="req on"><span class="chip get">GET</span><span class="nm">RetrieveStrategyDetails · consumes restrictionList</span></div>
+      <div class="req"><span class="chip post">POST</span><span class="nm">OrderValidationOverrides · consumes accountId</span></div>
+      <div style="padding:5px 12px;font-size:9.5px;color:var(--warning);background:var(--warningbg);margin:5px 12px;border-radius:3px">
+        ⚠ OrderValidationOverrides also needs <b>portfolioId</b> — nothing earlier produces it.
+        <u style="cursor:pointer">insert PortfolioCreation before this step</u></div>
+      <div style="padding:3px 12px 8px;font-size:9px;color:var(--sub)">no dependency data → panel says so honestly (edges come from enriched Postman collections)</div>
+      <div class="ph" style="border-top:1px solid var(--panel2)"><h2>Available values · step 2 editing</h2><span class="hint">click to insert</span></div>
+        <div class="grp">Your inputs</div>
+        <div class="req"><span class="chip grey">txt</span><span class="nm">input.officeCode</span></div>
+        <div class="req"><span class="chip grey">dt</span><span class="nm">input.asOfDate</span></div>
+        <div class="grp">From step 1 · /accounts/search</div>
+        <div class="req on"><span class="chip grey">list</span><span class="nm">accountList · 1,412 items in test</span></div>
+        <div class="req"><span class="chip grey">n</span><span class="nm">step1.totalCount</span></div>
+        <div style="padding:7px 12px;font-size:10px;color:var(--sub)">values discovered from the contract +
+          your test run — the analyst never reads JSON</div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><h2>Test run · SEI QA</h2><span class="hint">sampled: first 25 of accountList</span></div>
+        <div class="valrow"><span class="chip green">✓</span>Step 1 · 1,412 accounts found · 1.2s</div>
+        <div class="valrow"><span class="chip green">✓</span>Step 2 · 25/25 sampled · avg 402ms · masking on</div>
+        <div class="valrow"><span class="chip green">✓</span>Step 3 · 61 rows shaped</div>
+        <div class="rstat" style="border-top:1px solid var(--panel2)"><span class="code">Preview</span>
+          <span style="color:var(--sub)">what runners will see</span></div>
+        <div style="padding:9px 12px;font-size:11.5px">
+          <b>18 restricted accounts of 25 sampled in NY27</b>
+          <table style="font-size:11px;border-collapse:collapse;margin-top:5px;width:100%">
+            <tr style="font-size:9.5px;text-transform:uppercase;color:var(--sub)"><td>Account</td><td>Code</td><td>Meaning</td></tr>
+            <tr><td style="font-family:var(--mono)">0084271070</td><td style="font-family:var(--mono)">700</td><td>Fund Substitution</td></tr>
+            <tr><td style="font-family:var(--mono)">0084271070</td><td style="font-family:var(--mono)">450</td><td>No Tobacco</td></tr>
+            <tr><td style="font-family:var(--mono)">0091730112</td><td style="font-family:var(--mono)">575</td><td>ESG Screen</td></tr>
+          </table></div>
+      </div>
+
+      <div class="panel">
+        <div class="ph"><h2>Publish</h2></div>
+        <div style="padding:10px 12px;font-size:11.5px;display:flex;flex-direction:column;gap:6px">
+          <label><input type="checkbox" checked/> Appears as Guided tile for: <b>Ops · Wealth Mgmt</b></label>
+          <label><input type="checkbox"/> Allow Excel export of results</label>
+          <label><input type="checkbox" checked/> Reviewer sign-off required
+            <span style="color:var(--sub)">(flows calling POST/PUT always require it — enforced server-side: publish without sign-off saves as draft)</span></label>
+          <button class="send" style="margin-top:5px">Publish service</button>
+          <span style="font-size:9.5px;color:var(--sub)">publish = is_published='Y' on the business flow · bindings saved to api_flow_bindings · generated flows without bindings show as docs-only tiles</span>
+          <span style="font-size:10px;color:var(--sub)">published flows are versioned · runs are
+            evidence-tagged · contract drift on any step flags the tile automatically</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function toast(msg, ok){
+    var t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;bottom:22px;right:22px;z-index:99;background:'+
+      (ok===false?'#c1113a':'#10193b')+';color:#fff;padding:10px 16px;border-radius:3px;'+
+      'font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.3);max-width:420px';
+    document.body.appendChild(t);
+    setTimeout(function(){t.remove();},2600);
+  }
+  function chipRowToggle(el){
+    var sibs=[].slice.call(el.parentElement.children).filter(function(c){
+      return c.classList&&c.classList.contains('chip')&&c!==el;});
+    if(!sibs.length)return false;
+    sibs.forEach(function(c){c.style.background='var(--panel2)';c.style.color='var(--sub)';});
+    el.style.background='var(--navy)';el.style.color='#fff';
+    return true;
+  }
+  document.addEventListener('click',function(e){
+    var el=e.target.closest('button,.chip,.req,label');
+    if(!el)return;
+    var txt=(el.textContent||'').trim();
+
+    if(txt.indexOf('Get answer')===0){
+      var p=document.getElementById('g-answer');
+      el.textContent='asking SEI QA…';
+      setTimeout(function(){
+        el.textContent='Get answer ▶';
+        if(p){p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'nearest'});}
+        toast('✓ answered in 412 ms · masked per entitlements · evidence-logged');
+      },700);
+    }
+    else if(txt==='Send ▶'){
+      el.textContent='…';
+      setTimeout(function(){el.textContent='Send ▶';
+        toast('200 OK · 412 ms · SCHEMA ✓ · TESTS 3/3 — response shown below (canned)');},600);
+    }
+    else if(txt==='test'&&el.tagName==='BUTTON'){
+      var chip=document.createElement('span');
+      chip.className='chip green';chip.textContent='reachable · 41ms';
+      chip.style.marginLeft='6px';
+      el.parentElement.insertBefore(chip,el);
+      el.remove();
+    }
+    else if(txt.indexOf('Run all')>=0||txt.indexOf('Run sources')>=0){
+      toast('manifest ingestion started — results land in last_result per source');
+    }
+    else if(txt.indexOf('Ingest now')>=0){
+      var a2=document.getElementById('a2');
+      if(a2){a2.checked=true;toast('jumped to Contracts & Ingestion — system pre-selected');}
+    }
+    else if(txt.indexOf('Test (sampled)')>=0||txt==='▶ Test'){
+      toast('✓ step 1: 1,412 found · ✓ step 2: 25/25 sampled · ✓ 61 rows shaped — preview updated');
+    }
+    else if(txt==='Publish service'){
+      toast('published ✓ — tile is now visible in Guided for Ops · Wealth Mgmt');
+    }
+    else if(txt.indexOf('Upload')===0||txt.indexOf('⬆ Upload')===0){
+      toast('written to API-SPEC/PortfolioandModelManagement/ → connector ran → snapshot v2.4 → diff vs v2.3: 1 ADDITIVE — no drift');
+    }
+    else if(txt.indexOf('Scan folder')>=0){
+      toast('tree scan started — idempotent re-ingest of every spec · drift will flag on breaking diffs');
+    }
+    else if(txt.indexOf('insert PortfolioCreation')>=0){
+      toast('PortfolioCreation inserted as step 3 — prerequisite satisfied, warning cleared');
+    }
+    else if(txt==='versions'){
+      toast('3 snapshots: v2.1 · v2.2 · v2.3 (current) — raw specs retained in api_spec_versions');
+    }
+    else if(txt==='diff'){
+      toast('v2.2 → v2.3: BREAKING — cashAvailable required→nullable · 2 ADDITIVE fields');
+    }
+    else if(txt==='Save environment'){
+      toast('environment saved — secrets stored as refs, never echoed back');
+    }
+    else if(el.classList.contains('chip')&&getComputedStyle(el).cursor==='pointer'){
+      chipRowToggle(el);
+    }
+    else if(el.classList.contains('req')){
+      [].slice.call(el.parentElement.children).forEach(function(c){
+        if(c.classList&&c.classList.contains('req'))c.classList.remove('on');});
+      el.classList.add('on');
+    }
+  });
+})();
+</script>
+</body></html>
